@@ -79,6 +79,9 @@ class Swarm:
                 print(f'iter: {iter}, persit iter: {persist_count}, '
                 f'best score: {self.g_best_score}')
 
+        print(f'iter: {iter}, persit iter: {persist_count}, '
+        f'best score: {self.g_best_score}')
+
         return self.g_best_x
 
 

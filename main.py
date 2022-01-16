@@ -1,4 +1,3 @@
-import csv
 from methods import method_pso
 
 from my_io import parse_input
@@ -10,9 +9,9 @@ def main():
     num_c, cust_prefs, likes, dislikes, all_ings = parse_input(fp)
 
     optim_used_ings = method_pso(num_c, cust_prefs, likes, dislikes, all_ings)
-
-    cw = csv.writer(open(op, 'w'))
-    cw.writerow([len(optim_used_ings)] + list(optim_used_ings))
+    output = ' '.join([str(len(optim_used_ings)), *list(optim_used_ings)])
+    with open(op, 'w') as f:
+        f.write(output)
     
 
 if __name__ == '__main__':

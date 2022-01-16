@@ -39,10 +39,9 @@ def method_pso(num_c, cust_prefs, likes, dislikes, all_ings):
 
     s = Swarm(n_vars, int_pos, lbs_x, ubs_x, lbs_v*3, ubs_v*3)
     s.optimize(score_func, input_parser)
-    optim_remove_ings = s.get_x(s.g_best_x)
+    optim_used_ings = input_parser(s.get_x(s.g_best_x))
 
     # write output
-    optim_used_ings = likes - optim_remove_ings
     return optim_used_ings
 
 
