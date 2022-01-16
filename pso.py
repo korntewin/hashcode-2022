@@ -7,8 +7,8 @@ class Swarm:
     """
     def __init__(self,
         n_vars: int, int_pos: np.array, lbs_x: np.array, ubs_x: np.array,
-        lbs_v: np.array, ubs_v: np.array, wv: float = 0.7, wl: float = 2, wg: float = 2,
-        n_pars = 200, max_persist_iter = 20, max_iter = 1000
+        lbs_v: np.array, ubs_v: np.array, wv: float = 0.9, wl: float = 1.5, wg: float = 1.5,
+        n_pars = 100, max_persist_iter = 20, max_iter = 1000
         ):
         
         self.int_pos = int_pos
@@ -46,7 +46,7 @@ class Swarm:
     def evaluate(self, score_func: t.Callable, input_parser: t.Callable):
 
         xs = [self.get_x(par.x) for par in self.pars]
-        scores = [score_func(*input_parser(x)) for x in xs]
+        scores = [score_func(input_parser(x)) for x in xs]
         return scores
 
     def update_global(self, newscore: float, newx: np.array):
@@ -75,7 +75,8 @@ class Swarm:
             
             iter += 1
             print(f'iter: {iter}, persit iter: {persist_count}, '
-            f'best score: {self.g_best_score}, best x: {self.get_x(self.g_best_x)}')
+            f'best score: {self.g_best_score}')
+            # f'best score: {self.g_best_score}, best x: {self.get_x(self.g_best_x)}')
 
         return self.g_best_x
 
@@ -141,7 +142,7 @@ class Particle:
 
 if __name__ == '__main__':
     
-    scorefunc = lambda x, y: -(x**2 + y**2)
+    scorefunc = lambda xy: -(xy[0]**2 + xy[1]**2)
     
     def input_parser(xs: np.array):
         return xs[0], xs[1]
