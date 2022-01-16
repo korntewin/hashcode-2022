@@ -44,9 +44,10 @@ class Swarm:
 
         return x
 
-    def evaluate(self, score_func: t.Callable, input_parser: t.Callable):
+    def evaluate(self, score_func: t.Callable, input_parser: t.Callable, fraction_mode=False):
 
-        xs = [self.get_x(par.x) for par in self.pars]
+        xs = [self.get_x(par.x) for par in self.pars] \
+            if not fraction_mode else [par.x for par in self.pars]
         scores = [score_func(input_parser(x)) for x in xs]
         return scores
 
@@ -55,12 +56,12 @@ class Swarm:
             self.g_best_score = newscore
             self.g_best_x = newx
 
-    def optimize(self, score_func, input_parser) -> np.array:
+    def optimize(self, score_func, input_parser, fraction_mode=False, eval_func=None, eval_parser=None) -> np.array:
 
         persist_count = 0
         iter = 0
         while persist_count < self.max_persist_iter and iter < self.max_iter:
-            scores = self.evaluate(score_func, input_parser)
+            scores = self.evaluate(score_func, input_parser, fraction_mode)
             
             max_pairs = max(zip(scores, self.pars), key=lambda pairs: pairs[0])
 
@@ -75,12 +76,22 @@ class Swarm:
             for score, par in zip(scores, self.pars)]
             
             iter += 1
-            if iter % 10 == 0:
-                print(f'iter: {iter}, persit iter: {persist_count}, '
-                f'best score: {self.g_best_score}')
+            if iter % 2 == 0:
+                if eval_func is not None and eval_parser is not None:
+                    print(f'iter: {iter}, persit iter: {persist_count}, '
+                    f'best score: {self.g_best_score}, '
+                    f'eval score: {eval_func(eval_parser(self.get_x(self.g_best_x)))}')
+                else:
+                    print(f'iter: {iter}, persit iter: {persist_count}, '
+                    f'best score: {self.g_best_score}')
 
-        print(f'iter: {iter}, persit iter: {persist_count}, '
-        f'best score: {self.g_best_score}')
+        if eval_func is not None and eval_parser is not None:
+            print(f'iter: {iter}, persit iter: {persist_count}, '
+            f'best score: {self.g_best_score}, '
+            f'eval score: {eval_func(eval_parser(self.get_x(self.g_best_x)))}')
+        else:
+            print(f'iter: {iter}, persit iter: {persist_count}, '
+            f'best score: {self.g_best_score}')
 
         return self.g_best_x
 

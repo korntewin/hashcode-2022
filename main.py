@@ -3,8 +3,8 @@ from methods import method_pso
 from my_io import parse_input
 
 def main():
-    fp = './data/b_basic.in.txt'
-    op = './output/b_basic.out.txt'
+    fp = './data/e_elaborate.in.txt'
+    op = './output/e_elaborate.out.txt'
 
     num_c, cust_prefs, likes, dislikes, all_ings = parse_input(fp)
 

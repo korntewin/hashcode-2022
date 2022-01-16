@@ -18,17 +18,49 @@ def cal_score(used_ings: set, cust_prefs: dict) -> int:
     return len(rem_custs)
 
 
+def input_parser(xs: np.array, overlap_dislike_dict: dict, likes: set):
+    remove_ings = {overlap_dislike_dict[idx] for idx, x in enumerate(xs) if x == 1}
+    return likes - remove_ings
+
+
+def cal_score_fraction(xs, ing2ind_dict, cust_prefs: dict) -> int:
+    """Able to calculate fraction input
+    """
+
+    like_scores = [
+        xs[ing2ind_dict[like]] 
+        for _, prefs in cust_prefs.items() 
+        for like in prefs[1]
+        if like in ing2ind_dict
+    ]
+
+    dislike_scores = [
+        xs[ing2ind_dict[dislike]] 
+        for _, prefs in cust_prefs.items() 
+        for dislike in prefs[0]
+        if dislike in ing2ind_dict
+    ]
+
+    return sum(like_scores) - sum(dislike_scores)
+
+
+def input_parser_fraction(xs: np.array):
+
+    return xs
+
+
 def method_pso(num_c, cust_prefs, likes, dislikes, all_ings):
 
     from pso import Swarm
 
     overlap_dislike_dict = {ind: ing for ind, ing in enumerate(dislikes.intersection(likes))}
+    ing2ind_dict = {ing: ind for ind, ing in overlap_dislike_dict.items()}
 
     # pso params
-    score_func = lambda used_ings: cal_score(used_ings, cust_prefs)
-    def input_parser(xs: np.array):
-       remove_ings = {overlap_dislike_dict[idx] for idx, x in enumerate(xs) if x == 1}
-       return likes - remove_ings
+    full_func = lambda used_ings: cal_score(used_ings, cust_prefs)
+    full_parser = lambda xs: input_parser(xs, overlap_dislike_dict, likes)
+    frac_func = lambda xs: cal_score_fraction(xs, ing2ind_dict, cust_prefs)
+    frac_parser = lambda xs: input_parser_fraction(xs)
 
     n_vars = len(overlap_dislike_dict)
     int_pos = np.ones(n_vars) == 1
@@ -37,9 +69,9 @@ def method_pso(num_c, cust_prefs, likes, dislikes, all_ings):
     lbs_v = -(ubs_x + lbs_x)/2
     ubs_v = (ubs_x + lbs_x)/2
 
-    s = Swarm(n_vars, int_pos, lbs_x, ubs_x, lbs_v*3, ubs_v*3)
-    s.optimize(score_func, input_parser)
-    optim_used_ings = input_parser(s.get_x(s.g_best_x))
+    s = Swarm(n_vars, int_pos, lbs_x, ubs_x, lbs_v*3, ubs_v*3, max_iter=1000)
+    s.optimize(frac_func, frac_parser, fraction_mode=True, eval_func=full_func, eval_parser=full_parser)
+    optim_used_ings = full_parser(s.get_x(s.g_best_x))
 
     # write output
     return optim_used_ings
