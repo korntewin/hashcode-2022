@@ -8,7 +8,7 @@ class Swarm:
     def __init__(self,
         n_vars: int, int_pos: np.array, lbs_x: np.array, ubs_x: np.array,
         lbs_v: np.array, ubs_v: np.array, wv: float = 0.9, wl: float = 1.5, wg: float = 1.5,
-        n_pars = 100, max_persist_iter = 20, max_iter = 1000
+        n_pars = 100, max_persist_iter = 100, max_iter = 1000
         ):
         
         self.int_pos = int_pos
@@ -25,7 +25,8 @@ class Swarm:
         self.max_iter = max_iter
 
         # init particle
-        self.pars = [Particle(n_vars, wv, wl, wg, seed=time.time_ns() % 1000000) for _ in range(n_pars)]
+        np.random.seed(888)
+        self.pars = [Particle(n_vars, wv, wl, wg) for _ in range(n_pars)]
         [par.initial() for par in self.pars]
 
     def get_x(self, x):
@@ -74,9 +75,9 @@ class Swarm:
             for score, par in zip(scores, self.pars)]
             
             iter += 1
-            print(f'iter: {iter}, persit iter: {persist_count}, '
-            f'best score: {self.g_best_score}')
-            # f'best score: {self.g_best_score}, best x: {self.get_x(self.g_best_x)}')
+            if iter % 10 == 0:
+                print(f'iter: {iter}, persit iter: {persist_count}, '
+                f'best score: {self.g_best_score}')
 
         return self.g_best_x
 
@@ -86,9 +87,8 @@ class Particle:
     """
 
     def __init__(self, 
-            n_vars: int, wv: float = 0.7, wl: float = 2, wg: float = 2, seed = 191
+            n_vars: int, wv: float = 0.7, wl: float = 2, wg: float = 2
         ):
-        np.random.seed(seed)
         self.n_vars = n_vars
         self.wv = wv
         self.wl = wl
