@@ -8,7 +8,7 @@ class Swarm:
     def __init__(self,
         n_vars: int, int_pos: np.array, lbs_x: np.array, ubs_x: np.array,
         lbs_v: np.array, ubs_v: np.array, wv: float = 0.9, wl: float = 1.5, wg: float = 1.5,
-        n_pars = 100, max_persist_iter = 100, max_iter = 1000
+        n_pars = 200, max_persist_iter = 1000, max_iter = 1000
         ):
         
         self.int_pos = int_pos
@@ -139,7 +139,7 @@ class Particle:
 
         # cap x
         x[x > 1] = 1
-        x[x < -1] = -1
+        x[x < 0] = 0
         self.x = x
 
     def update_l_best(self, newscore: float):

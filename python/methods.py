@@ -70,7 +70,7 @@ def method_pso(num_c, cust_prefs, likes, dislikes, all_ings):
     ubs_v = (ubs_x + lbs_x)/2
 
     s = Swarm(n_vars, int_pos, lbs_x, ubs_x, lbs_v*3, ubs_v*3, max_iter=1000)
-    s.optimize(frac_func, frac_parser, fraction_mode=True, eval_func=full_func, eval_parser=full_parser)
+    s.optimize(full_func, full_parser, fraction_mode=False)
     optim_used_ings = full_parser(s.get_x(s.g_best_x))
 
     # write output

@@ -3,7 +3,7 @@ from methods import method_pso
 from my_io import parse_input
 
 def main():
-    fp = './data/e_elaborate.in.txt'
+    fp = './data/d_difficult.in.txt'
     op = './output/e_elaborate.out.txt'
 
     num_c, cust_prefs, likes, dislikes, all_ings = parse_input(fp)
