@@ -29,13 +29,13 @@ pub fn parse_input(filename: String) -> (HashSet<String>, HashSet<String>, HashM
             idx if idx % 2 == 1 && idx > 0 => {
                 let new_set = HashSet::<String>::from_iter(line[1..].iter().map(|ele| ele.clone()));
                 likes.extend(new_set.clone());
-                customer_prefs.insert(idx/2, HashMap::from([(1, new_set.clone())]));
+                customer_prefs.insert((idx+1)/2, HashMap::from([(1, new_set.clone())]));
             },
             idx if idx % 2 == 0 && idx > 0 => {
                 let new_set = HashSet::<String>::from_iter(line[1..].iter().map(|ele| ele.clone()));
                 dislikes.extend(new_set.clone());
                 customer_prefs
-                    .entry(idx/2)
+                    .entry((idx+1)/2)
                     .or_insert(HashMap::from([(0, new_set.clone())]))
                     .insert(0, new_set.clone());
             }
